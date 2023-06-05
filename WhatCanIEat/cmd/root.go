@@ -1,13 +1,17 @@
 package cmd
 
 import (
+	"WhatCanIEat/WhatCanIEat/cmd/errors"
+	"WhatCanIEat/WhatCanIEat/cmd/recipes"
+	finderPackage "WhatCanIEat/WhatCanIEat/cmd/recipes/finder"
 	"fmt"
 	"github.com/spf13/cobra"
+	"log"
 )
 
 var (
 	ingredients     *[]string
-	numberOfRecipes *int
+	numberOfRecipes int
 
 	rootCmd = &cobra.Command{
 		Use:   "root --ingredients=tomatoes,eggs,pasta --numberOfRecipes=5",
@@ -21,7 +25,16 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("Inside rootCmd Run with args:\n")
 			fmt.Printf("\tingredients: %v\n", *ingredients)
-			fmt.Printf("\tnumberOfRecipes: %v\n", *numberOfRecipes)
+			fmt.Printf("\tnumberOfRecipes: %v\n", numberOfRecipes)
+
+			var finder finderPackage.Finder = finderPackage.SpoonacularFinder{}
+
+			possibleRecipes, err := finder.FindByIngredientsNames(ingredients, numberOfRecipes)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			recipes.DrawRecipes(&possibleRecipes)
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
 			//fmt.Printf("Inside rootCmd PostRun with args: %v\n", args)
@@ -31,11 +44,11 @@ var (
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			// TODO: Check are given words ingredients.
-			if *numberOfRecipes < 1 {
-				return InvalidNumberOfIRecipes(*numberOfRecipes)
+			if numberOfRecipes < 1 {
+				return errors.InvalidNumberOfIRecipes(numberOfRecipes)
 			}
 			if len(*ingredients) < 1 {
-				return InvalidIngredients(*ingredients)
+				return errors.InvalidIngredients(*ingredients)
 			}
 			return nil
 		},
@@ -57,7 +70,7 @@ func init() {
 		return
 	}
 
-	numberOfRecipes = rootCmd.Flags().Int("numberOfRecipes",
+	rootCmd.Flags().IntVar(&numberOfRecipes, "numberOfRecipes",
 		0,
 		"Number of recipes to generate. Example value: \"5\"")
 

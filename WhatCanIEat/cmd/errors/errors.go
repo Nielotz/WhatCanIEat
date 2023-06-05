@@ -1,4 +1,4 @@
-package cmd
+package errors
 
 import "fmt"
 
@@ -12,4 +12,10 @@ type InvalidIngredients []string
 
 func (e InvalidIngredients) Error() string {
 	return fmt.Sprintf(" \"%s\" are not valid ingredients.", []string(e))
+}
+
+type ReceivedBadStatusCode string
+
+func (e ReceivedBadStatusCode) Error() string {
+	return "Received bad status code: " + string(e)
 }
