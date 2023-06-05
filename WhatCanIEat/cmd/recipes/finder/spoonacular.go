@@ -2,7 +2,7 @@ package finder
 
 import (
 	"WhatCanIEat/WhatCanIEat/cmd/errors"
-	ingredientsModule "WhatCanIEat/WhatCanIEat/cmd/ingredients"
+	ingredientsPackage "WhatCanIEat/WhatCanIEat/cmd/ingredients"
 	"WhatCanIEat/WhatCanIEat/cmd/recipes"
 	"encoding/json"
 	"io"
@@ -20,7 +20,6 @@ func (finder SpoonacularFinder) FindByIngredientsNames(ingredients *[]string,
 	/* Get Recipe Id, Title, Ingredients and MissingIngredients. */
 
 	// TODO: Use (if exists) pathlib or sth similar, to auto format, validate and sanitize.
-	// TODO: Move apiKey into secret.
 	recipesUrl := "https://api.spoonacular.com/recipes/findByIngredients" +
 		"?ingredients=" + strings.Join(*ingredients, ",") +
 		"&sort=min-missing-ingredients" +
@@ -44,7 +43,6 @@ func (finder SpoonacularFinder) FindByIngredientsNames(ingredients *[]string,
 	/* Get Nutrition. */
 	for idx, recipe := range parsedRecipes {
 		// TODO: Use (if exists) pathlib or sth similar, to auto format, validate and sanitize.
-		// TODO: Move apiKey into secret.
 		nutritionUrl := "https://api.spoonacular.com/recipes/" + strconv.Itoa(recipe.Id) + "/information" +
 			"?includeNutrition=true" +
 			"&apiKey=" + os.Getenv("SPOONACULAR_API_KEY")
@@ -104,17 +102,17 @@ func (finder SpoonacularFinder) responseToRecipes(response *http.Response) ([]re
 	parsedRecipes := make([]recipes.Recipe, len(recipesFromJson))
 	for idx, recipe := range recipesFromJson {
 
-		ingredients := make([]ingredientsModule.Ingredient, len(recipe.Ingredients))
+		ingredients := make([]ingredientsPackage.Ingredient, len(recipe.Ingredients))
 		for idx_, ingredient := range recipe.Ingredients {
-			ingredients[idx_] = ingredientsModule.Ingredient{
+			ingredients[idx_] = ingredientsPackage.Ingredient{
 				Id:   ingredient.Id,
 				Name: ingredient.Name,
 			}
 		}
 
-		missingIngredients := make([]ingredientsModule.Ingredient, len(recipe.MissingIngredients))
+		missingIngredients := make([]ingredientsPackage.Ingredient, len(recipe.MissingIngredients))
 		for idx_, ingredient := range recipe.MissingIngredients {
-			missingIngredients[idx_] = ingredientsModule.Ingredient{
+			missingIngredients[idx_] = ingredientsPackage.Ingredient{
 				Id:   ingredient.Id,
 				Name: ingredient.Name,
 			}

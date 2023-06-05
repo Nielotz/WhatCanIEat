@@ -6,17 +6,17 @@ import (
 )
 
 type Recipe struct {
-	Id                 int
-	Title              string
-	Ingredients        []ingredients.Ingredient
-	MissingIngredients []ingredients.Ingredient
-	Nutrition          Nutrition
+	Id                 int                      `json:"id,omitempty"`
+	Title              string                   `json:"title,omitempty"`
+	Ingredients        []ingredients.Ingredient `json:"ingredients,omitempty"`
+	MissingIngredients []ingredients.Ingredient `json:"missing_ingredients,omitempty"`
+	Nutrition          Nutrition                `json:"nutrition"`
 }
 
 type Nutrition struct {
-	Carbs    float32 // percent
-	Proteins float32 // percent
-	Fat      float32 // percent
+	Carbs    float32 `json:"carbs,omitempty"`    // percent
+	Proteins float32 `json:"proteins,omitempty"` // percent
+	Fat      float32 `json:"fat,omitempty"`      // percent
 }
 
 func DrawRecipes(recipes *[]Recipe) {
