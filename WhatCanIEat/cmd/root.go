@@ -16,11 +16,8 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "root --ingredients=tomatoes,eggs,pasta --numberOfRecipes=5",
 		Short: "Generate numberOfRecipes of possible recipes using given ingredients.",
-		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			//fmt.Printf("Inside rootCmd PersistentPreRun with args: %v\n", args)
-		},
 		PreRun: func(cmd *cobra.Command, args []string) {
-			//fmt.Printf("Inside rootCmd PreRun with args: %v\n", args)
+			// Connect to db.
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("Inside rootCmd Run with args:\n")
@@ -37,10 +34,7 @@ var (
 			recipes.DrawRecipes(&possibleRecipes)
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
-			//fmt.Printf("Inside rootCmd PostRun with args: %v\n", args)
-		},
-		PersistentPostRun: func(cmd *cobra.Command, args []string) {
-			//fmt.Printf("Inside rootCmd PersistentPostRun with args: %v\n", args)
+			// Disconnect from db.
 		},
 		Args: func(cmd *cobra.Command, args []string) error {
 			// TODO: Check are given words ingredients.

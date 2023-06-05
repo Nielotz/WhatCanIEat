@@ -5,8 +5,10 @@ import (
 	ingredientsModule "WhatCanIEat/WhatCanIEat/cmd/ingredients"
 	"WhatCanIEat/WhatCanIEat/cmd/recipes"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -23,13 +25,15 @@ func (finder SpoonacularFinder) FindByIngredientsNames(ingredients *[]string,
 		"?ingredients=" + strings.Join(*ingredients, ",") +
 		"&sort=min-missing-ingredients" +
 		"&number=" + strconv.Itoa(numberOfRecipes) +
-		"&apiKey="
+		"&apiKey=" + os.Getenv("SPOONACULAR_API_KEY")
 
 	recipesResponse, err := finder.getValidResponse(recipesUrl)
 	if err != nil {
 		return nil, err
 	}
-	defer recipesResponse.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(recipesResponse.Body)
 
 	parsedRecipes, err := finder.responseToRecipes(recipesResponse)
 	if err != nil {
@@ -42,7 +46,7 @@ func (finder SpoonacularFinder) FindByIngredientsNames(ingredients *[]string,
 		// TODO: Move apiKey into secret.
 		nutritionUrl := "https://api.spoonacular.com/recipes/" + strconv.Itoa(recipe.Id) + "/information" +
 			"?includeNutrition=true" +
-			"&apiKey="
+			"&apiKey=" + os.Getenv("SPOONACULAR_API_KEY")
 
 		nutritionResponse, err := finder.getValidResponse(nutritionUrl)
 		if err != nil {
@@ -50,10 +54,10 @@ func (finder SpoonacularFinder) FindByIngredientsNames(ingredients *[]string,
 		}
 		parsedRecipes[idx].Nutrition, err = finder.responseToNutrition(nutritionResponse)
 		if err != nil {
-			nutritionResponse.Body.Close()
+			_ = nutritionResponse.Body.Close()
 			return nil, err
 		}
-		nutritionResponse.Body.Close()
+		_ = nutritionResponse.Body.Close()
 	}
 
 	return parsedRecipes, nil
@@ -69,7 +73,7 @@ func (finder SpoonacularFinder) getValidResponse(url string) (response *http.Res
 	}
 
 	if response.StatusCode != http.StatusOK {
-		response.Body.Close()
+		_ = response.Body.Close()
 		return nil, errors.ReceivedBadStatusCode(response.Status)
 	}
 	log.Println("Response: " + response.Status)

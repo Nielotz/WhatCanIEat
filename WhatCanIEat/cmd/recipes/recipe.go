@@ -38,9 +38,9 @@ func DrawRecipes(recipes *[]Recipe) {
 		}
 		out += fmt.Sprintf(
 			"  Nutrition: \n"+
-				"    Carbs: %f%%\n"+
-				"    Proteins: %f%%\n"+
-				"    Fat: %f%%\n",
+				"    Carbs: %.1f%%\n"+
+				"    Proteins: %.1f%%\n"+
+				"    Fat: %.1f%%\n",
 			recipe.Nutrition.Carbs, recipe.Nutrition.Proteins, recipe.Nutrition.Fat)
 		out += "\n"
 	}
