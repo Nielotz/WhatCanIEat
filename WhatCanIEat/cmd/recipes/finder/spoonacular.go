@@ -24,6 +24,7 @@ func (finder SpoonacularFinder) FindByIngredientsNames(ingredients *[]string,
 	recipesUrl := "https://api.spoonacular.com/recipes/findByIngredients" +
 		"?ingredients=" + strings.Join(*ingredients, ",") +
 		"&sort=min-missing-ingredients" +
+		"&ranking=2" + // Minimize missing ingredients.
 		"&number=" + strconv.Itoa(numberOfRecipes) +
 		"&apiKey=" + os.Getenv("SPOONACULAR_API_KEY")
 
